@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "bootpag@1.0.7",
+      "destination": "wwwroot/lib/jquery/dist/"
+    }
+  ]
+}
