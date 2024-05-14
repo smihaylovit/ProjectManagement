@@ -6,22 +6,14 @@ $(document).ready(function () {
     google.charts.load('current', { 'packages': ['table', 'bar'] });
     google.charts.setOnLoadCallback(function () {
         drawUsersTable(1);
-        drawChartBar("user");
+        drawChartBar();
     });
 
     $("#fromDate, #toDate").on("change", function () {
         drawUsersTable(1);
-        let userOrProjectValue = $('input[type=radio][name="user-or-project"]:checked').val();
-        if (userOrProjectValue == 'user') {
-            drawChartBar(userOrProjectValue);
-        } else {
-            $('input[name="user-or-project"]').trigger("change");
-        }
+        drawChartBar();
     });
-    $('input[name="user-or-project"]').on("change", function () {
-        let userOrProjectValue = $('input[type=radio][name="user-or-project"]:checked').val();
-        drawChartBar(userOrProjectValue);
-    });
+    $('input[name="user-or-project"]').on("change", drawChartBar);
 
     function drawUsersTable(pageNumberValue) {
         $('#users-table').html('');
@@ -37,21 +29,24 @@ $(document).ready(function () {
         }).done(function (response) { loadUsersTable(response, pageNumberValue); });
     }
 
-    function drawChartBar(userOrProjectValue) {
+    function drawChartBar() {
+        $('#user-performance-chart').html('');
         let fromDateValue = $("#fromDate").val();
         let toDateValue = $("#toDate").val();
+        let userOrProjectValue = $('input[type=radio][name="user-or-project"]:checked').val();
 
         $.ajax({
             async: false,
             url: 'Users/GetBarChart',
             type: 'GET',
             data: { fromdate: fromDateValue, toDate: toDateValue, userOrProject: userOrProjectValue },
-        }).done(function (response) { loadChartBar(response, userOrProjectValue); });
+        }).done(loadChartBar);
     }
 
-    function loadChartBar(response, userOrProjectValue) {
+    function loadChartBar(response) {
         let fromDateValue = $("#fromDate").val();
         let toDateValue = $("#toDate").val();
+        let userOrProjectValue = $('input[type=radio][name="user-or-project"]:checked').attr('id');
 
         let rows = [];
         rows[0] = ['User', 'Hours'];
@@ -64,8 +59,8 @@ $(document).ready(function () {
 
         let options = {
             chart: {
-                title: 'User Performance',
-                subtitle: fromDateValue + '-' + toDateValue,
+                title: userOrProjectValue == 'user' ? 'User Performance' : 'User Performance For Project ' + userOrProjectValue,
+                subtitle: fromDateValue + ' - ' + toDateValue,
             },
             bars: 'horizontal',
             hAxis: { format: 'decimal' },

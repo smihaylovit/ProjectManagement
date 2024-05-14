@@ -1,14 +1,15 @@
-﻿<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+﻿@model HomeIndexViewModel
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <div class="row">
 	<div class="col">
 		<div class="row" id="users-date-filter">
 			<div class="col text-center">
 				<label for="fromDate">From:</label>
-				<input type="date" id="fromDate" name="fromDate" value="@ViewBag.MinDate" min="@ViewBag.MinDate" max="@ViewBag.MaxDate" />
+				<input type="date" id="fromDate" name="fromDate" value="@Model.MinDate" min="@Model.MinDate" max="@Model.MaxDate" />
 			</div>
 			<div class="col text-center">
 				<label for="toDate">To:</label>
-				<input type="date" id="toDate" name="toDate" value="@ViewBag.MaxDate" min="@ViewBag.MinDate" max="@ViewBag.MaxDate" />
+				<input type="date" id="toDate" name="toDate" value="@Model.MaxDate" min="@Model.MinDate" max="@Model.MaxDate" />
 			</div>
 		</div>
 		<div class="row" id="users-table"></div>
@@ -23,8 +24,11 @@
 		<div class="btn-group" role="group" aria-label="Basic radio toggle button group">
 			<input value="user" type="radio" class="btn-check" name="user-or-project" id="user" autocomplete="off" checked>
 			<label class="btn btn-outline-primary" for="user">User</label>
-			<input value="project" type="radio" class="btn-check" name="user-or-project" id="project" autocomplete="off">
-			<label class="btn btn-outline-primary" for="project">Project</label>
+			@foreach (var project in Model.Projects)
+			{
+				<input value="@project.Id" type="radio" class="btn-check" name="user-or-project" id="@project.Name" autocomplete="off">
+				<label class="btn btn-outline-primary" for="@project.Name">@project.Name</label>
+			}
 		</div>
 	</div>
 </div>
