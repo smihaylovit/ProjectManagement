@@ -24,15 +24,16 @@ namespace ProjectManagement.Web.Controllers
             var users =
                 (from user in DbContext.Users
                  join timeLog in DbContext.TimeLogs on user.Id equals timeLog.UserId
-                 where user.Id >= cursor + 1 && user.Id <= cursor + GlobalConstants.UsersPageSize &&
-                       timeLog.Date >= fromDate && timeLog.Date <= toDate
-                 orderby user.Id
+                 where timeLog.Date >= fromDate && timeLog.Date <= toDate
                  select new UserViewModel
                  {
                      Id = user.Id,
                      Email = user.Email
                  })
                  .Distinct()
+                 .Where(u => u.Id >= cursor + 1)
+                 .Take(GlobalConstants.UsersPageSize)
+                 .OrderBy(u => u.Id)
                  .ToList();
 
             return Json(users);
