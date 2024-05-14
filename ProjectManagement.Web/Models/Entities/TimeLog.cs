@@ -1,5 +1,8 @@
-﻿namespace ProjectManagement.Web.Models.Entities
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace ProjectManagement.Web.Models.Entities
 {
+    [Index(nameof(Date), IsUnique = false)]
     public class TimeLog
     {
         public int Id { get; set; }

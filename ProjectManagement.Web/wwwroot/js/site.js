@@ -24,6 +24,8 @@ $(document).ready(function () {
     });
 
     function drawUsersTable(pageNumberValue) {
+        $('#users-table').html('');
+        $('#pages').html('');
         let fromDateValue = $("#fromDate").val();
         let toDateValue = $("#toDate").val();
 

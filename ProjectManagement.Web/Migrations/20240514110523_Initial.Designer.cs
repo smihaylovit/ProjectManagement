@@ -12,7 +12,7 @@ using ProjectManagement.Web.Data;
 namespace ProjectManagement.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240513142748_Initial")]
+    [Migration("20240514110523_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -66,6 +66,8 @@ namespace ProjectManagement.Web.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Date");
 
                     b.HasIndex("ProjectId");
 

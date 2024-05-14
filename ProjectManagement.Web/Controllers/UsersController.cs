@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.EntityFrameworkCore;
 using ProjectManagement.Web.Data;
 using ProjectManagement.Web.Models;
 using ProjectManagement.Web.Models.Entities;
@@ -18,23 +20,21 @@ namespace ProjectManagement.Web.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(Duration = 60 * 60, VaryByQueryKeys = ["pageNumber"])]
         public IActionResult Get(DateOnly fromDate, DateOnly toDate, int pageNumber)
         {
-            var cursor = (pageNumber - 1) * GlobalConstants.UsersPageSize;
             var users =
-                (from user in DbContext.Users
-                 join timeLog in DbContext.TimeLogs on user.Id equals timeLog.UserId
-                 where timeLog.Date >= fromDate && timeLog.Date <= toDate
-                 select new UserViewModel
-                 {
-                     Id = user.Id,
-                     Email = user.Email
-                 })
-                 .Distinct()
-                 .Where(u => u.Id >= cursor + 1)
-                 .Take(GlobalConstants.UsersPageSize)
-                 .OrderBy(u => u.Id)
-                 .ToList();
+                DbContext.Users.Include(u => u.TimeLogs)
+                .Where(u => u.TimeLogs.Any(tl => tl.Date >= fromDate & tl.Date <= toDate))
+                .OrderBy(u => u.Id)
+                .Skip((pageNumber - 1) * GlobalConstants.UsersPageSize)
+                .Take(GlobalConstants.UsersPageSize)
+                .Select(u => new UserViewModel
+                {
+                    Id = u.Id,
+                    Email = u.Email
+                })
+                .ToList();
 
             return Json(users);
         }
@@ -47,7 +47,7 @@ namespace ProjectManagement.Web.Controllers
                  group timeLog by timeLog.UserId into tlg
                  select new ChartViewModel
                  {
-                     Email = DbContext.Users.Single(u => u.Id == tlg.Key).Email,
+                     Email = DbContext.Users.First(u => u.Id == tlg.Key).Email,
                      Hours = tlg.Where(tl => tl.Date >= fromDate && tl.Date <= toDate).Sum(tl => tl.Hours)
                  })
                  .OrderByDescending(u => u.Hours)

@@ -64,6 +64,8 @@ namespace ProjectManagement.Web.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Date");
+
                     b.HasIndex("ProjectId");
 
                     b.HasIndex("UserId");

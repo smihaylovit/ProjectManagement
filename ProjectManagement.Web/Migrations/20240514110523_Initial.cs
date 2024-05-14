@@ -76,6 +76,11 @@ namespace ProjectManagement.Web.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_TimeLogs_Date",
+                table: "TimeLogs",
+                column: "Date");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TimeLogs_ProjectId",
                 table: "TimeLogs",
                 column: "ProjectId");
