@@ -34,7 +34,6 @@ namespace ProjectManagement.Web.Data.Initialization
         {
             var gen = new RandomDataGenerator();
             var users = gen.GetUsersData();
-            var projects = gen.GetProjectsData();
             var timeLogs = new List<TimeLogData>();
 
             foreach (var user in users)
@@ -63,9 +62,9 @@ namespace ProjectManagement.Web.Data.Initialization
             sb.AppendLine("DBCC CHECKIDENT (Users, RESEED, 0)");
             sb.AppendLine("END");
 
-            foreach (var project in projects)
+            foreach (var projectName in GlobalConstants.ProjectNames)
             {
-                sb.AppendLine($"INSERT INTO Projects (Name) VALUES ('{project.Name}')");
+                sb.AppendLine($"INSERT INTO Projects (Name) VALUES ('{projectName}')");
             }
 
             foreach (var user in users)

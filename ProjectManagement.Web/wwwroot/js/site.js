@@ -2,110 +2,113 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
-$(document).ready(function () {
-    google.charts.load('current', { 'packages': ['table', 'bar'] });
-    google.charts.setOnLoadCallback(function () {
-        drawUsersTable(1);
-        drawChartBar();
-    });
-
+google.charts.load('current', { 'packages': ['table', 'bar'] });
+google.charts.setOnLoadCallback(function () {
     $("#fromDate, #toDate").on("change", function () {
-        drawUsersTable(1);
-        drawChartBar();
+        loadUsersTable();
+        loadUsersPerformanceChart();
     });
-    $('input[name="user-or-project"]').on("change", drawChartBar);
 
-    function drawUsersTable(pageNumberValue) {
-        $('#users-table').html('');
-        $('#pages').html('');
-        let fromDateValue = $("#fromDate").val();
-        let toDateValue = $("#toDate").val();
-
-        $.ajax({
-            async: false,
-            url: 'Users/Get',
-            type: 'GET',
-            data: { fromdate: fromDateValue, toDate: toDateValue, pageNumber: pageNumberValue },
-        }).done(function (response) { loadUsersTable(response, pageNumberValue); });
-    }
-
-    function drawChartBar() {
-        $('#user-performance-chart').html('');
-        let fromDateValue = $("#fromDate").val();
-        let toDateValue = $("#toDate").val();
-        let userOrProjectValue = $('input[type=radio][name="user-or-project"]:checked').val();
-
-        $.ajax({
-            async: false,
-            url: 'Users/GetBarChart',
-            type: 'GET',
-            data: { fromdate: fromDateValue, toDate: toDateValue, userOrProject: userOrProjectValue },
-        }).done(loadChartBar);
-    }
-
-    function loadChartBar(response) {
-        let fromDateValue = $("#fromDate").val();
-        let toDateValue = $("#toDate").val();
-        let userOrProjectValue = $('input[type=radio][name="user-or-project"]:checked').attr('id');
-
-        let rows = [];
-        rows[0] = ['User', 'Hours'];
-
-        for (let i = 0; i < response.length; i++) {
-            rows[i + 1] = [response[i].email, response[i].hours]
-        }
-
-        let data = google.visualization.arrayToDataTable(rows);
-
-        let options = {
-            chart: {
-                title: userOrProjectValue == 'user' ? 'User Performance' : 'User Performance For Project ' + userOrProjectValue,
-                subtitle: fromDateValue + ' - ' + toDateValue,
-            },
-            bars: 'horizontal',
-            hAxis: { format: 'decimal' },
-            height: 400,
-            width: '100%',
-            colors: ['#1b9e77', '#d95f02', '#7570b3']
-        };
-
-        let chart = new google.charts.Bar(document.getElementById('user-performance-chart'));
-        chart.draw(data, google.charts.Bar.convertOptions(options));
-    }
-
-    function loadUsersTable(response, pageNumberValue) {
-        let data = new google.visualization.DataTable();
-        let rows = [];
-
-        for (let i = 0; i < response.length; i++) {
-            rows[i] = [response[i].id, response[i].email]
-        }
-
-        data.addColumn('number', 'Id');
-        data.addColumn('string', 'Email');
-        data.addRows(rows);
-
-        let table = new google.visualization.Table(document.getElementById('users-table'));
-        table.draw(data, { width: '100%', height: '100%' });
-
-        $('#pages').bootpag({
-            total: rows.length,
-            page: pageNumberValue,
-            maxVisible: 3,
-            leaps: true,
-            firstLastUse: true,
-            first: '←',
-            last: '→',
-            wrapClass: 'pagination',
-            activeClass: 'active',
-            disabledClass: 'disabled',
-            nextClass: 'next',
-            prevClass: 'prev',
-            lastClass: 'last',
-            firstClass: 'first'
-        }).on("page", function (event, pageNumber) {
-            $("#pageNumber").html("Page " + pageNumber);
-            drawUsersTable(pageNumber);
-        });
-    }
+    loadUsersTable();
+    loadUsersPerformanceChart();
 });
+
+function loadUsersTable() {
+    let fromDateValue = $("#fromDate").val();
+    let toDateValue = $("#toDate").val();
+    let pageNumberValue = $('input[name="users-pagination"]:checked').val();
+    let data = {
+        fromdate: fromDateValue,
+        toDate: toDateValue,
+        pageNumber: pageNumberValue
+    };
+
+    $.ajax({
+        url: 'Users/Get',
+        type: 'GET',
+        data: data,
+    }).done(drawUsersTable);
+}
+
+function drawUsersTable(response) {
+    let rows = [];
+
+    for (let i = 0; i < response.users.length; i++) {
+        rows[i] = [response.users[i].id, response.users[i].email]
+    }
+
+    let data = new google.visualization.DataTable();
+    data.addColumn('number', 'Id');
+    data.addColumn('string', 'Email');
+    data.addRows(rows);
+    data.setProperty(0, 0, 'style', 'width:50px');
+
+    let table = new google.visualization.Table(document.getElementById('users-table'));
+    table.draw(data, { width: '100%', height: 400, allowHtml: true, cssClassNames: { headerCell: 'normal-whitespace' } });
+
+    let btns = $('#users-pagination-btns').html('');
+
+    if (response.pages > 0) {
+        for (let i = 1; i <= response.pages; i++) {
+            btns.append("<input value='" + i + "' type='radio' class='btn-check' name='users-pagination' id='page-" + i + "' autocomplete='off'" + (i == response.selectedPage ? " checked" : "") + ">");
+            btns.append("<label class='btn btn-outline-primary' for='page-" + i + "'>" + i + "</label>");
+        }
+
+        $("input[name=users-pagination]").on("change", loadUsersTable);
+    }
+}
+
+function loadUsersPerformanceChart() {
+    let fromDateValue = $("#fromDate").val();
+    let toDateValue = $("#toDate").val();
+    let projectIdValue = $('input[name="user-or-project"]:checked').val();
+    let data = {
+        fromdate: fromDateValue,
+        toDate: toDateValue,
+        projectId: projectIdValue
+    };
+
+    $.ajax({
+        url: 'Users/GetPerformance',
+        type: 'GET',
+        data: data,
+    }).done(drawUsersPerformanceChart);
+}
+
+function drawUsersPerformanceChart(response) {
+    let fromDateValue = $("#fromDate").val();
+    let toDateValue = $("#toDate").val();
+    let rows = [];
+    rows[0] = ['User', 'Hours'];
+
+    for (let i = 0; i < response.chartData.length; i++) {
+        rows[i + 1] = [response.chartData[i].email, response.chartData[i].hours]
+    }
+
+    let data = google.visualization.arrayToDataTable(rows);
+    let options = {
+        chart: {
+            title: 'Users Performance For ' + response.selectedProjectName,
+            subtitle: fromDateValue + ' - ' + toDateValue,
+        },
+        bars: 'horizontal',
+        hAxis: { format: 'decimal' },
+        height: 400,
+        width: '100%',
+        colors: ['#1b9e77', '#d95f02', '#7570b3']
+    };
+
+    let chart = new google.charts.Bar(document.getElementById('users-performance-chart'));
+    chart.draw(data, google.charts.Bar.convertOptions(options));
+
+    let btns = $('#user-or-project-btns').html('');
+
+    if (response.projects.length > 0) {
+        for (let i = 0; i <= response.projects.length; i++) {
+            btns.append("<input value='" + i + "' type='radio' class='btn-check' name='user-or-project' id='project-" + i + "' autocomplete='off'" + (i == response.selectedProjectId ? " checked" : "") + ">");
+            btns.append("<label class='btn btn-outline-primary' for='project-" + i + "'>" + (i == 0 ? "All Projects" : response.projects[i - 1].name) + "</label>");
+        }
+
+        $("input[name=user-or-project]").on("change", loadUsersPerformanceChart);
+    }
+}

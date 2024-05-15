@@ -4,23 +4,6 @@
     {
         private static readonly Random Random = new Random();
 
-        public List<ProjectData> GetProjectsData()
-        {
-            var projectsData = new List<ProjectData>();
-
-            for (int counter = 0; counter < GlobalConstants.ProjectNames.Length; counter++)
-            {
-                var project = new ProjectData
-                {
-                    Name = GlobalConstants.ProjectNames[counter],
-                };
-
-                projectsData.Add(project);
-            }
-
-            return projectsData;
-        }
-
         public List<UserData> GetUsersData()
         {
             var usersData = new List<UserData>();

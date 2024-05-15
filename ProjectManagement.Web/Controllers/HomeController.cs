@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using ProjectManagement.Web.Data;
 using ProjectManagement.Web.Models;
 using System.Diagnostics;
 
@@ -7,25 +6,19 @@ namespace ProjectManagement.Web.Controllers
 {
     public class HomeController : Controller
     {
-		private readonly ApplicationDbContext DbContext;
-		private readonly ILogger<HomeController> Logger;
+        private readonly ILogger<HomeController> Logger;
 
-		public HomeController(ApplicationDbContext dbContext, ILogger<HomeController> logger)
-		{
-			DbContext = dbContext;
-			Logger = logger;
-		}
-
-		public IActionResult Index()
+        public HomeController(ILogger<HomeController> logger)
         {
-            var viewModel = new HomeIndexViewModel
-            {
-                MinDate = GlobalConstants.TimeLogMinDate.ToString("yyyy-MM-dd"),
-                MaxDate = DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd"),
-                Projects = DbContext.Projects.Select(p => new ProjectViewModel { Id = p.Id, Name = p.Name }).ToList()
-            };
+            Logger = logger;
+        }
 
-            return View(viewModel);
+        public IActionResult Index()
+        {
+            ViewBag.MinDate = GlobalConstants.TimeLogMinDate.ToString("yyyy-MM-dd");
+            ViewBag.MaxDate = DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd");
+
+            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
