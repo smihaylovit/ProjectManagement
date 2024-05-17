@@ -2,6 +2,19 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+let forms = document.querySelectorAll('.needs-validation');
+
+Array.prototype.slice.call(forms).forEach(function (form) {
+    form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        form.classList.add('was-validated');
+    }, false);
+});
+
 let dateFormat = "dd-M-yy";
 let options = {
     dateFormat: dateFormat,
@@ -53,21 +66,6 @@ toDate.datepicker("option", "onSelect", function () {
         }
     });
 });
-
-//(function () {
-//    'use strict'
-//    var forms = document.querySelectorAll('.needs-validation');
-//    Array.prototype.slice.call(forms).forEach(function (form) {
-//        form.addEventListener('submit', function (event) {
-//            if (!form.checkValidity()) {
-//                event.preventDefault();
-//                event.stopPropagation();
-//            }
-
-//            form.classList.add('was-validated');
-//        }, false);
-//    })
-//})()
 
 google.charts.load('current', { 'packages': ['table', 'bar'] });
 google.charts.setOnLoadCallback(function () {
