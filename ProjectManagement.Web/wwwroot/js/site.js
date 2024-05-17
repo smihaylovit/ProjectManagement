@@ -2,21 +2,83 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+let dateFormat = "dd-M-yy";
+let options = {
+    dateFormat: dateFormat,
+    changeMonth: true,
+    changeYear: true,
+    showButtonPanel: true,
+    closeText: "Close",
+    firstDay: 1,
+    hideIfNoPrevNext: true,
+    maxDate: 0
+};
+
+let fromDate = $("#fromDate").datepicker(options);
+let toDate = $("#toDate").datepicker(options);
+
+fromDate.datepicker("option", "beforeShow", function () {
+    let maxValue = toDate.datepicker("getDate");
+    maxValue = maxValue == null ? 0 : maxValue;
+    return {
+        maxDate: maxValue
+    }
+});
+
+fromDate.datepicker("option", "onSelect", function () {
+    setTimeout(function () {
+        if (toDate.datepicker("getDate") == null) {
+            toDate.datepicker("show");
+        } else {
+            loadUsersTable();
+            loadUsersPerformanceChart();
+        }
+    });
+});
+
+toDate.datepicker("option", "beforeShow", function () {
+    let minValue = fromDate.datepicker("getDate");
+    return {
+        minDate: minValue
+    }
+});
+
+toDate.datepicker("option", "onSelect", function () {
+    setTimeout(function () {
+        if (fromDate.datepicker("getDate") == null) {
+            fromDate.datepicker("show");
+        } else {
+            loadUsersTable();
+            loadUsersPerformanceChart();
+        }
+    });
+});
+
+//(function () {
+//    'use strict'
+//    var forms = document.querySelectorAll('.needs-validation');
+//    Array.prototype.slice.call(forms).forEach(function (form) {
+//        form.addEventListener('submit', function (event) {
+//            if (!form.checkValidity()) {
+//                event.preventDefault();
+//                event.stopPropagation();
+//            }
+
+//            form.classList.add('was-validated');
+//        }, false);
+//    })
+//})()
+
 google.charts.load('current', { 'packages': ['table', 'bar'] });
 google.charts.setOnLoadCallback(function () {
-    $("#fromDate, #toDate").on("change", function () {
-        loadUsersTable();
-        loadUsersPerformanceChart();
-    });
-
-    loadUsersTable();
-    loadUsersPerformanceChart();
+    //loadUsersTable();
+    //loadUsersPerformanceChart();
 });
 
 function loadUsersTable() {
     let fromDateValue = $("#fromDate").val();
     let toDateValue = $("#toDate").val();
-    let pageNumberValue = $('input[name="users-pagination"]:checked').val();
+    let pageNumberValue = $("input[name='page-number']:checked").val();
     let data = {
         fromdate: fromDateValue,
         toDate: toDateValue,
@@ -50,18 +112,18 @@ function drawUsersTable(response) {
 
     if (response.pages > 0) {
         for (let i = 1; i <= response.pages; i++) {
-            btns.append("<input value='" + i + "' type='radio' class='btn-check' name='users-pagination' id='page-" + i + "' autocomplete='off'" + (i == response.selectedPage ? " checked" : "") + ">");
+            btns.append("<input value='" + i + "' type='radio' class='btn-check' name='page-number' id='page-" + i + "' autocomplete='off'" + (i == response.selectedPage ? " checked" : "") + ">");
             btns.append("<label class='btn btn-outline-primary' for='page-" + i + "'>" + i + "</label>");
         }
 
-        $("input[name=users-pagination]").on("change", loadUsersTable);
+        $("input[name='page-number']").on("change", loadUsersTable);
     }
 }
 
 function loadUsersPerformanceChart() {
     let fromDateValue = $("#fromDate").val();
     let toDateValue = $("#toDate").val();
-    let projectIdValue = $('input[name="user-or-project"]:checked').val();
+    let projectIdValue = $("input[name='project-id']:checked").val();
     let data = {
         fromdate: fromDateValue,
         toDate: toDateValue,
@@ -101,14 +163,14 @@ function drawUsersPerformanceChart(response) {
     let chart = new google.charts.Bar(document.getElementById('users-performance-chart'));
     chart.draw(data, google.charts.Bar.convertOptions(options));
 
-    let btns = $('#user-or-project-btns').html('');
+    let btns = $('#projects-btns').html('');
 
     if (response.projects.length > 0) {
         for (let i = 0; i <= response.projects.length; i++) {
-            btns.append("<input value='" + i + "' type='radio' class='btn-check' name='user-or-project' id='project-" + i + "' autocomplete='off'" + (i == response.selectedProjectId ? " checked" : "") + ">");
+            btns.append("<input value='" + i + "' type='radio' class='btn-check' name='project-id' id='project-" + i + "' autocomplete='off'" + (i == response.selectedProjectId ? " checked" : "") + ">");
             btns.append("<label class='btn btn-outline-primary' for='project-" + i + "'>" + (i == 0 ? "All Projects" : response.projects[i - 1].name) + "</label>");
         }
 
-        $("input[name=user-or-project]").on("change", loadUsersPerformanceChart);
+        $("input[name='project-id']").on("change", loadUsersPerformanceChart);
     }
 }

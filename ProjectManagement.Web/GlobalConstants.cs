@@ -7,7 +7,7 @@
 
         public const int UsersCount = 100;
         public const int UsersPageSize = 10;
-        public const int UsersPerformanceSize = 10;
+        public const int UsersCountForPerformanceChart = 10;
         public const int UserTimeLogsMinCount = 1;
         public const int UserTimeLogsMaxCount = 20;
         public const float UserMaxWorkHoursPerDay = 8.00f;

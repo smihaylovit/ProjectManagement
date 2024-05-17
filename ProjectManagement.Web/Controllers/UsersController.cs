@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using ProjectManagement.Web.Data;
 using ProjectManagement.Web.Models;
-using ProjectManagement.Web.Models.Entities;
 
 namespace ProjectManagement.Web.Controllers
 {
@@ -107,7 +106,7 @@ namespace ProjectManagement.Web.Controllers
             chartData =
                 chartData
                 .OrderByDescending(u => u.Hours)
-                .Take(GlobalConstants.UsersPerformanceSize)
+                .Take(GlobalConstants.UsersCountForPerformanceChart)
                 .ToList();
 
             return Json(new

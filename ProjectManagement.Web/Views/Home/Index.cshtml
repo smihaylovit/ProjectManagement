@@ -1,20 +1,35 @@
-﻿<div class="row">
-	<div class="col col-xl-6 text-center">
-		<div id="users-date-filter" class="row">
-			<div class="col text-center">
-				<label for="fromDate">From:</label>
-				<input type="date" id="fromDate" name="fromDate" value="@ViewBag.MinDate" min="@ViewBag.MinDate" max="@ViewBag.MaxDate" />
-			</div>
-			<div class="col text-center">
-				<label for="toDate">To:</label>
-				<input type="date" id="toDate" name="toDate" value="@ViewBag.MaxDate" min="@ViewBag.MinDate" max="@ViewBag.MaxDate" />
+﻿<form id="initialize-db-form" method="post" class="row g-3 needs-validation" novalidate>
+	<div class="col-12 text-center">
+		<button id="initialize-db-btn" type="submit" class="btn btn-primary btn-lg">Initialize</button>
+	</div>
+	<div id="users-fromDate-filter" class="col-6 text-center">
+		<label for="fromDate" class="form-label"><strong>From Date</strong></label>
+		<div class="input-group has-validation">
+			<span class="input-group-text" id="fromDate-calendar-icon"><img class="calendar-icon" src="~/img/calendar.png" /></span>
+			<input type="text" class="form-control" id="fromDate" name="fromDate" aria-describedby="fromDate-calendar-icon" autocomplete="off" maxlength="0" required>
+			<div class="invalid-feedback">
+				Please choose a start date.
 			</div>
 		</div>
+	</div>
+	<div id="users-toDate-filter" class="col-6 text-center">
+		<label for="toDate" class="form-label"><strong>To Date</strong></label>
+		<div class="input-group has-validation">
+			<span class="input-group-text" id="toDate-calendar-icon"><img class="calendar-icon" src="~/img/calendar.png" /></span>
+			<input type="text" class="form-control" id="toDate" name="toDate" aria-describedby="toDate-calendar-icon" autocomplete="off" maxlength="0" required>
+			<div class="invalid-feedback">
+				Please choose an end date.
+			</div>
+		</div>
+	</div>
+</form>
+<div id="users-charts" class="row">
+	<div class="col-6 text-center">
 		<div id="users-table"></div>
 		<div id="users-pagination-btns" class="btn-group" role="group"></div>
 	</div>
-	<div class="col col-xl-6 text-center">
+	<div class="col-6 text-center">
 		<div id="users-performance-chart"></div>
-		<div id="user-or-project-btns" class="btn-group" role="group"></div>
+		<div id="projects-btns" class="btn-group" role="group"></div>
 	</div>
 </div>
