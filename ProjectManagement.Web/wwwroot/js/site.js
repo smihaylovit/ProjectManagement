@@ -74,8 +74,8 @@ google.charts.setOnLoadCallback(function () {
 });
 
 function loadUsersTable() {
-    let fromDateValue = fromDate.val();
-    let toDateValue = toDate.val();
+    let fromDateValue = fromDate.datepicker("getDate");
+    let toDateValue = toDate.datepicker("getDate");
     let pageNumberValue = $("input[name='page-number']:checked").val();
     let data = {
         fromdate: fromDateValue,
@@ -137,8 +137,8 @@ function drawUsersTable(response) {
 }
 
 function loadUsersPerformanceChart(userToCompareId) {
-    let fromDateValue = fromDate.val();
-    let toDateValue = toDate.val();
+    let fromDateValue = fromDate.datepicker("getDate");
+    let toDateValue = toDate.datepicker("getDate");
     let projectIdValue = $("input[name='project-id']:checked").val();
     let data = {
         userToCompareId: userToCompareId,

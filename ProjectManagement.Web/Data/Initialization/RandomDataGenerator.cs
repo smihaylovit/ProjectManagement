@@ -32,7 +32,7 @@
             return usersData;
         }
 
-        public List<TimeLogData> GetTimeLogs(UserData user, DateTime fromDate, DateTime toDate)
+        public List<TimeLogData> GetTimeLogs(UserData user, DateOnly fromDate, DateOnly toDate)
         {
             var timeLogsData = new List<TimeLogData>();
             var timeLogsCount = Random.Next(GlobalConstants.UserTimeLogsMinCount, GlobalConstants.UserTimeLogsMaxCount + 1);
@@ -43,8 +43,8 @@
                 {
                     UserId = user.Id,
                     ProjectId = Random.Next(1, GlobalConstants.ProjectNames.Length + 1),
-                    Date = DateOnly.FromDateTime(fromDate.AddDays(
-                        Random.Next((toDate - fromDate).Days))),
+                    Date = fromDate.AddDays(
+                        Random.Next((toDate.ToDateTime(new TimeOnly(0, 0, 0)) - fromDate.ToDateTime(new TimeOnly(0, 0, 0))).Days)),
                     Hours = float.MaxValue
                 };
 

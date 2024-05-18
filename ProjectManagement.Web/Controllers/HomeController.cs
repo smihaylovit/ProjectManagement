@@ -23,19 +23,19 @@ namespace ProjectManagement.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(DateTime fromDate, DateTime toDate)
+        public async Task<IActionResult> Index(DateOnly? fromDate, DateOnly? toDate)
         {
-            if (fromDate <= toDate && 
-                toDate <= DateTime.Today.Date)
+            if (fromDate != null && toDate != null && fromDate <= toDate &&
+                toDate <= DateOnly.FromDateTime(DateTime.Today.Date))
             {
                 var gen = new DbInitializationSqlGenerator();
-                var createSpSql = gen.CreateDbInitializationStoredProcedureSql(fromDate, toDate);
+                var createSpSql = gen.CreateDbInitializationStoredProcedureSql(fromDate.Value, toDate.Value);
                 var execSpSql = gen.CreateDbInitializationStoredProcedureExecutionSql();
                 var createSp = await DbContext.Database.ExecuteSqlRawAsync(createSpSql);
                 var execSp = await DbContext.Database.ExecuteSqlRawAsync(execSpSql);
 
-                ViewBag.FromDate = DateOnly.FromDateTime(fromDate).ToString("dd-MMM-yyyy");
-                ViewBag.ToDate = DateOnly.FromDateTime(toDate).ToString("dd-MMM-yyyy");
+                ViewBag.FromDate = fromDate?.ToString("dd-MMM-yyyy");
+                ViewBag.ToDate = toDate?.ToString("dd-MMM-yyyy");
             }
 
             return View();

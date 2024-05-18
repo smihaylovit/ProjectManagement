@@ -14,7 +14,7 @@
 
         public const float TimeLogMinHours = 0.25f;
         public const float TimeLogMaxHours = 8.00f;
-        public static readonly DateTime TimeLogMinDate = new DateTime(2023, 1, 1);
+        public static readonly DateOnly TimeLogMinDate = new DateOnly(2023, 1, 1);
 
         public static readonly string[] ProjectNames = { "My own", "Free Time", "Work" };
 

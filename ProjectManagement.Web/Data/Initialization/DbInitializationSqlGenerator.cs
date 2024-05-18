@@ -30,7 +30,7 @@ namespace ProjectManagement.Web.Data.Initialization
             return sb.ToString();
         }
 
-        public string CreateDbInitializationStoredProcedureSql(DateTime fromDate, DateTime toDate)
+        public string CreateDbInitializationStoredProcedureSql(DateOnly fromDate, DateOnly toDate)
         {
             var gen = new RandomDataGenerator();
             var users = gen.GetUsersData();
