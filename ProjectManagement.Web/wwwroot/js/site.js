@@ -69,13 +69,13 @@ toDate.datepicker("option", "onSelect", function () {
 
 google.charts.load('current', { 'packages': ['table', 'bar'] });
 google.charts.setOnLoadCallback(function () {
-    //loadUsersTable();
-    //loadUsersPerformanceChart();
+    loadUsersTable();
+    loadUsersPerformanceChart();
 });
 
 function loadUsersTable() {
-    let fromDateValue = $("#fromDate").val();
-    let toDateValue = $("#toDate").val();
+    let fromDateValue = fromDate.val();
+    let toDateValue = toDate.val();
     let pageNumberValue = $("input[name='page-number']:checked").val();
     let data = {
         fromdate: fromDateValue,
@@ -84,10 +84,24 @@ function loadUsersTable() {
     };
 
     $.ajax({
-        url: 'Users/Get',
         type: 'GET',
+        url: 'Users/Get',
         data: data,
-    }).done(drawUsersTable);
+        beforeSend: function () {
+            clearChartsHtml();
+            $('#users-container .loader-icon').show();
+        },
+        success: function (response) {
+            if (response.users.length > 0) {
+                drawUsersTable(response);
+            }
+        },
+        error: function () {
+        },
+        complete: function () {
+            $('#users-container .loader-icon').hide();
+        }
+    });
 }
 
 function drawUsersTable(response) {
@@ -114,13 +128,16 @@ function drawUsersTable(response) {
             btns.append("<label class='btn btn-outline-primary' for='page-" + i + "'>" + i + "</label>");
         }
 
-        $("input[name='page-number']").on("change", loadUsersTable);
+        $("input[name='page-number']").on("change", function () {
+            loadUsersTable();
+            loadUsersPerformanceChart();
+        });
     }
 }
 
 function loadUsersPerformanceChart() {
-    let fromDateValue = $("#fromDate").val();
-    let toDateValue = $("#toDate").val();
+    let fromDateValue = fromDate.val();
+    let toDateValue = toDate.val();
     let projectIdValue = $("input[name='project-id']:checked").val();
     let data = {
         fromdate: fromDateValue,
@@ -129,10 +146,30 @@ function loadUsersPerformanceChart() {
     };
 
     $.ajax({
-        url: 'Users/GetPerformance',
         type: 'GET',
+        url: 'Users/GetPerformance',
         data: data,
-    }).done(drawUsersPerformanceChart);
+        beforeSend: function () {          
+            $('#performance-container .loader-icon').show();
+        },
+        success: function (response) {
+            if (response.chartData.length > 0 && response.projects.length > 0) {
+                $(".no-data").addClass("d-none");
+                $(".no-database").addClass("d-none");
+                drawUsersPerformanceChart(response);
+            } else {
+                clearChartsHtml();
+                $(".no-data").removeClass("d-none");
+            }
+        },
+        error: function () {
+            clearChartsHtml();
+            $(".no-database").removeClass("d-none");
+        },
+        complete: function () {
+            $('#performance-container .loader-icon').hide();
+        }
+    });
 }
 
 function drawUsersPerformanceChart(response) {
@@ -164,11 +201,20 @@ function drawUsersPerformanceChart(response) {
     let btns = $('#projects-btns').html('');
 
     if (response.projects.length > 0) {
-        for (let i = 0; i <= response.projects.length; i++) {
-            btns.append("<input value='" + i + "' type='radio' class='btn-check' name='project-id' id='project-" + i + "' autocomplete='off'" + (i == response.selectedProjectId ? " checked" : "") + ">");
-            btns.append("<label class='btn btn-outline-primary' for='project-" + i + "'>" + (i == 0 ? "All Projects" : response.projects[i - 1].name) + "</label>");
+        btns.append("<input value='0' type='radio' class='btn-check' name='project-id' id='project-0' autocomplete='off'" + (response.selectedProjectId == 0 ? " checked" : "") + ">");
+        btns.append("<label class='btn btn-outline-primary' for='project-0'>All Projects</label>");
+        for (let i = 0; i < response.projects.length; i++) {
+            btns.append("<input value='" + response.projects[i].id + "' type='radio' class='btn-check' name='project-id' id='project-" + response.projects[i].id + "' autocomplete='off'" + (response.projects[i].id == response.selectedProjectId ? " checked" : "") + ">");
+            btns.append("<label class='btn btn-outline-primary' for='project-" + response.projects[i].id + "'>" + response.projects[i].name + "</label>");
         }
 
         $("input[name='project-id']").on("change", loadUsersPerformanceChart);
     }
+}
+
+function clearChartsHtml() {
+    $("#users-table").html('');
+    $("#users-pagination-btns").html('');
+    $("#users-performance-chart").html('');
+    $("#projects-btns").html('');
 }

@@ -18,8 +18,18 @@ namespace ProjectManagement.Web.Controllers
 
         [HttpGet]
         [ResponseCache(Duration = 5 * 60, VaryByQueryKeys = ["*"])]
-        public async Task<IActionResult> Get(DateOnly fromDate, DateOnly toDate, int pageNumber)
+        public async Task<IActionResult> Get(DateOnly? fromDate, DateOnly? toDate, int pageNumber)
         {
+            if (fromDate == null)
+            {
+                fromDate = DateOnly.MinValue;
+            }
+
+            if (toDate == null)
+            {
+                toDate = DateOnly.MaxValue;
+            }
+
             var users = await
                 DbContext.Users
                 .Include(u => u.TimeLogs)
@@ -51,8 +61,18 @@ namespace ProjectManagement.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPerformance(DateOnly fromDate, DateOnly toDate, int projectId)
+        public async Task<IActionResult> GetPerformance(DateOnly? fromDate, DateOnly? toDate, int projectId)
         {
+            if (fromDate == null)
+            {
+                fromDate = DateOnly.MinValue;
+            }
+
+            if (toDate == null)
+            {
+                toDate = DateOnly.MaxValue;
+            }
+
             var projects = await
                 DbContext.Projects
                 .Include(p => p.TimeLogs)

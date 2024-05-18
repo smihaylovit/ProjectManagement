@@ -30,7 +30,7 @@ namespace ProjectManagement.Web.Data.Initialization
             return sb.ToString();
         }
 
-        public string CreateDbInitializationStoredProcedureSql()
+        public string CreateDbInitializationStoredProcedureSql(DateTime fromDate, DateTime toDate)
         {
             var gen = new RandomDataGenerator();
             var users = gen.GetUsersData();
@@ -38,7 +38,7 @@ namespace ProjectManagement.Web.Data.Initialization
 
             foreach (var user in users)
             {
-                timeLogs.AddRange(gen.GetTimeLogs(user));
+                timeLogs.AddRange(gen.GetTimeLogs(user, fromDate, toDate));
             }
 
             StringBuilder sb = new StringBuilder();
@@ -74,7 +74,7 @@ namespace ProjectManagement.Web.Data.Initialization
 
             foreach (var timeLog in timeLogs)
             {
-                sb.AppendLine($"INSERT INTO TimeLogs (UserId, ProjectId, Date, Hours) VALUES ({timeLog.UserId}, {timeLog.ProjectId}, '{timeLog.Date:yyyy-MM-dd}', {timeLog.Hours:f2})");
+                sb.AppendLine($"INSERT INTO TimeLogs (UserId, ProjectId, Date, Hours) VALUES ({timeLog.UserId}, {timeLog.ProjectId}, '{timeLog.Date:dd-MMM-yyyy}', {timeLog.Hours:f2})");
             }
 
             sb.AppendLine("END");

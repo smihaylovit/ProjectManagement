@@ -12,7 +12,7 @@ using ProjectManagement.Web.Data;
 namespace ProjectManagement.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240514110523_Initial")]
+    [Migration("20240517230804_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

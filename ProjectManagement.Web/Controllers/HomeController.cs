@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ProjectManagement.Web.Data;
+using ProjectManagement.Web.Data.Initialization;
 using ProjectManagement.Web.Models;
 using System.Diagnostics;
 
@@ -6,17 +9,34 @@ namespace ProjectManagement.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> Logger;
+        private readonly ApplicationDbContext DbContext;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext dbContext)
         {
-            Logger = logger;
+            DbContext = dbContext;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
-            ViewBag.MinDate = GlobalConstants.TimeLogMinDate.ToString("yyyy-MM-dd");
-            ViewBag.MaxDate = DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd");
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(DateTime fromDate, DateTime toDate)
+        {
+            if (fromDate <= toDate && 
+                toDate <= DateTime.Today.Date)
+            {
+                var gen = new DbInitializationSqlGenerator();
+                var createSpSql = gen.CreateDbInitializationStoredProcedureSql(fromDate, toDate);
+                var execSpSql = gen.CreateDbInitializationStoredProcedureExecutionSql();
+                var createSp = await DbContext.Database.ExecuteSqlRawAsync(createSpSql);
+                var execSp = await DbContext.Database.ExecuteSqlRawAsync(execSpSql);
+
+                ViewBag.FromDate = DateOnly.FromDateTime(fromDate).ToString("dd-MMM-yyyy");
+                ViewBag.ToDate = DateOnly.FromDateTime(toDate).ToString("dd-MMM-yyyy");
+            }
 
             return View();
         }

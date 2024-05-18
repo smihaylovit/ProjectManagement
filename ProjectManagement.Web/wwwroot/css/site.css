@@ -15,9 +15,15 @@ button.ui-datepicker-current {
     font-weight: bold !important;
 }
 
-.calendar-icon {
+.calendar-icon,
+.loader-icon {
     width: 30px;
     height: 30px;
+}
+
+.no-data,
+.no-database {
+    color: #dc3545
 }
 
 /*.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {

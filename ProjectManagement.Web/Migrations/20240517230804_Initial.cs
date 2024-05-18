@@ -95,12 +95,12 @@ namespace ProjectManagement.Web.Migrations
                 table: "Users",
                 column: "Email",
                 unique: true);
-
+         
             var gen = new DbInitializationSqlGenerator();
 
             migrationBuilder.Sql(gen.CreateUserMaxWorkHoursPerDayTriggerSql());
-            migrationBuilder.Sql(gen.CreateDbInitializationStoredProcedureSql());
-            migrationBuilder.Sql(gen.CreateDbInitializationStoredProcedureExecutionSql());
+            //migrationBuilder.Sql(gen.CreateDbInitializationStoredProcedureSql(GlobalConstants.TimeLogMinDate, DateTime.Today.Date));
+            //migrationBuilder.Sql(gen.CreateDbInitializationStoredProcedureExecutionSql());
         }
 
         /// <inheritdoc />
@@ -115,7 +115,7 @@ namespace ProjectManagement.Web.Migrations
             migrationBuilder.DropTable(
                 name: "Users");
 
-            migrationBuilder.Sql($"DROP PROCEDURE {GlobalConstants.DbInitializationStoredProcedureName}");
+            //migrationBuilder.Sql($"DROP PROCEDURE {GlobalConstants.DbInitializationStoredProcedureName}");
         }
     }
 }
