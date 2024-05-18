@@ -73,6 +73,8 @@ google.charts.setOnLoadCallback(function () {
     loadUsersPerformanceChart();
 });
 
+let userToCompareId = 0;
+
 function loadUsersTable() {
     let fromDateValue = fromDate.datepicker("getDate");
     let toDateValue = toDate.datepicker("getDate");
@@ -108,7 +110,7 @@ function drawUsersTable(response) {
     let rows = [];
 
     for (let i = 0; i < response.users.length; i++) {
-        rows[i] = [response.users[i].id, response.users[i].email, "<input style='color:#dc3545;' type='button' value='Compare' onclick='loadUsersPerformanceChart(" + response.users[i].id + ")' />"]
+        rows[i] = [response.users[i].id, response.users[i].email, "<input style='color:#dc3545;' type='button' value='Compare' onclick='compareUser(" + response.users[i].id + ")' />"]
     }
 
     let data = new google.visualization.DataTable();
@@ -130,13 +132,13 @@ function drawUsersTable(response) {
         }
 
         $("input[name='page-number']").on("change", function () {
-            loadUsersTable();
             loadUsersPerformanceChart();
+            loadUsersTable();
         });
     }
 }
 
-function loadUsersPerformanceChart(userToCompareId) {
+function loadUsersPerformanceChart() {
     let fromDateValue = fromDate.datepicker("getDate");
     let toDateValue = toDate.datepicker("getDate");
     let projectIdValue = $("input[name='project-id']:checked").val();
@@ -227,6 +229,11 @@ function clearChartsHtml() {
     $("#users-pagination-btns").html('');
     $("#users-performance-chart").html('');
     $("#projects-btns").html('');
+}
+
+function compareUser(userId) {
+    userToCompareId = userId;
+    loadUsersPerformanceChart();
 }
 
 $("#initialize-db-btn").on("click", function () {
