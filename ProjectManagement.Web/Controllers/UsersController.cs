@@ -61,7 +61,7 @@ namespace ProjectManagement.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPerformance(DateOnly? fromDate, DateOnly? toDate, int projectId)
+        public async Task<IActionResult> GetPerformance(int userToCompareId, DateOnly? fromDate, DateOnly? toDate, int projectId)
         {
             if (fromDate == null)
             {
@@ -123,18 +123,30 @@ namespace ProjectManagement.Web.Controllers
                     .ToListAsync();
             }
 
+            var userToCompareEmail = DbContext.Users.FirstOrDefault(u => u.Id == userToCompareId)?.Email;
+            var userToCompareChartData = chartData.FirstOrDefault(cd => cd.Email == userToCompareEmail);
+
             chartData =
                 chartData
                 .OrderByDescending(u => u.Hours)
                 .Take(GlobalConstants.UsersCountForPerformanceChart)
                 .ToList();
 
+            if (userToCompareChartData != null)
+            {
+                chartData = 
+                    chartData.Append(userToCompareChartData)
+                    .OrderByDescending(cd => cd.Hours)
+                    .ToList();
+            }
+
             return Json(new
-            { 
+            {
                 ChartData = chartData,
                 Projects = projects,
                 SelectedProjectId = projectId,
-                SelectedProjectName = projectId == 0 ? "All Projects" : projects[projectId - 1].Name
+                SelectedProjectName = projectId == 0 ? "All Projects" : projects[projectId - 1].Name,
+                UserToCompareChartData = userToCompareChartData
             });
         }
     }
