@@ -108,12 +108,13 @@ function drawUsersTable(response) {
     let rows = [];
 
     for (let i = 0; i < response.users.length; i++) {
-        rows[i] = [response.users[i].id, response.users[i].email]
+        rows[i] = [response.users[i].id, response.users[i].email, "<input style='color:red;' type='button' value='Compare' onclick='compareUser(" + response.users[i].id + ")' />"]
     }
 
     let data = new google.visualization.DataTable();
     data.addColumn('number', 'Id');
     data.addColumn('string', 'Email');
+    data.addColumn('string', '');
     data.addRows(rows);
     data.setProperty(0, 0, 'style', 'width:50px');
 
@@ -210,6 +211,10 @@ function drawUsersPerformanceChart(response) {
 
         $("input[name='project-id']").on("change", loadUsersPerformanceChart);
     }
+}
+
+function compareUser(userId) {
+    
 }
 
 function clearChartsHtml() {
