@@ -17,7 +17,7 @@ namespace ProjectManagement.Web.Controllers
         }
 
         [HttpGet]
-        [ResponseCache(Duration = 5 * 60, VaryByQueryKeys = ["*"])]
+        //[ResponseCache(Duration = 5 * 60, VaryByQueryKeys = ["*"])]
         public async Task<IActionResult> Get(DateOnly? fromDate, DateOnly? toDate, int pageNumber)
         {
             if (fromDate == null)
